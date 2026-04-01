@@ -5,7 +5,7 @@
 </head>
 <body>
 
-<h2>Tron Test (Send 1 TRX)</h2>
+<h2>Tron Test (Trust Wallet)</h2>
 
 <button onclick="connectWallet()">Connect Wallet</button>
 <br><br>
@@ -13,41 +13,39 @@
 <button onclick="sendTrx()">Sign & Send 1 TRX</button>
 
 <script>
-async function connectWallet() {
-  if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
-    alert("Connected: " + window.tronWeb.defaultAddress.base58);
+function connectWallet() {
+  if (window.tronWeb) {
+    alert("Wallet detected");
+    console.log(window.tronWeb);
   } else {
-    alert("Open in TronLink or Trust Wallet dApp browser");
+    alert("Trust Wallet may not support TronWeb injection");
   }
 }
 
 async function sendTrx() {
   try {
+    if (!window.tronWeb) {
+      alert("TronWeb not available in Trust Wallet");
+      return;
+    }
+
     const tronWeb = window.tronWeb;
 
     const from = tronWeb.defaultAddress.base58;
-    const to = from; // sending to yourself (safe)
-    const amount = 1 * 1e6; // 1 TRX (Sun)
+    const to = from;
+    const amount = 1 * 1e6;
 
-    // Build transaction
-    const tx = await tronWeb.transactionBuilder.sendTrx(
-      to,
-      amount,
-      from
-    );
+    const tx = await tronWeb.transactionBuilder.sendTrx(to, amount, from);
 
-    // This triggers wallet popup
     const signed = await tronWeb.trx.sign(tx);
-
-    // Broadcast
     const result = await tronWeb.trx.sendRawTransaction(signed);
 
     console.log(result);
-    alert("Done! Check wallet / Tronscan");
+    alert("Transaction sent");
 
   } catch (e) {
     console.error(e);
-    alert("Error occurred");
+    alert("Error: " + e.message);
   }
 }
 </script>

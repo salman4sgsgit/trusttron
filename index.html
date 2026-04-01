@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tron Safe Test</title>
+</head>
+<body>
+
+<h2>Tron Wallet Test (Nile Testnet)</h2>
+
+<button onclick="connectWallet()">Connect Wallet</button>
+<br><br>
+
+<button onclick="signMessage()">Sign Message</button>
+<br><br>
+
+<button onclick="sendTrx()">Send 1 TRX (Testnet)</button>
+
+<script>
+async function connectWallet() {
+  if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+    alert("Connected: " + window.tronWeb.defaultAddress.base58);
+  } else {
+    alert("Open this in TronLink or Trust Wallet dApp browser");
+  }
+}
+
+async function signMessage() {
+  try {
+    const message = "Hello Tron Test";
+    const signed = await window.tronWeb.trx.signMessage(message);
+    console.log(signed);
+    alert("Message signed! Check console");
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function sendTrx() {
+  try {
+    const to = window.tronWeb.defaultAddress.base58; // sending to self (safe)
+    const amount = 1 * 1e6; // 1 TRX
+
+    const tx = await window.tronWeb.transactionBuilder.sendTrx(
+      to,
+      amount,
+      window.tronWeb.defaultAddress.base58
+    );
+
+    const signed = await window.tronWeb.trx.sign(tx);
+    const result = await window.tronWeb.trx.sendRawTransaction(signed);
+
+    console.log(result);
+    alert("Transaction sent!");
+  } catch (e) {
+    console.error(e);
+  }
+}
+</script>
+
+</body>
+</html>
